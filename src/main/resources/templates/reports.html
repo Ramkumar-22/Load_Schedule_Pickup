@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pickup Reports</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .nav-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-completed { border-left: 4px solid #28a745; }
+        .card-pending { border-left: 4px solid #ffc107; }
+        .card-assigned { border-left: 4px solid #17a2b8; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark nav-gradient">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="fas fa-box-open me-2"></i>PickupScheduler</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Home</a>
+            <a class="nav-link" href="/pickups"><i class="fas fa-list me-1"></i> All Requests</a>
+            <a class="nav-link" href="/manage-requests"><i class="fas fa-tasks me-1"></i> Manage</a>
+            <a class="nav-link active" href="/reports"><i class="fas fa-chart-bar me-1"></i> Reports</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4"><i class="fas fa-chart-bar me-2"></i>Pickup Reports & Analytics</h1>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <h3 th:text="${completedPickups.size()}">0</h3>
+                    <h5>Completed Pickups</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x mb-3"></i>
+                    <h3 th:text="${pendingPickups.size()}">0</h3>
+                    <h5>Pending & Scheduled</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check fa-3x mb-3"></i>
+                    <h3 th:text="${assignedPickups.size()}">0</h3>
+                    <h5>Assigned Pickups</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Completed Pickups -->
+        <div class="col-md-6 mb-4">
+            <div class="card card-completed h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Completed Pickups</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>User</th>
+                                <th>Pickup Date</th>
+                                <th>Time Slot</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="pickup : ${completedPickups}">
+                                <td th:text="${pickup.requestId}"></td>
+                                <td th:text="${pickup.user.name}"></td>
+                                <td th:text="${pickup.pickupDate}"></td>
+                                <td th:text="${pickup.timeSlot}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(completedPickups)}">
+                                <td colspan="4" class="text-center text-muted">No completed pickups</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending & Scheduled Pickups -->
+        <div class="col-md-6 mb-4">
+            <div class="card card-pending h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Pending & Scheduled Pickups</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>User</th>
+                                <th>Pickup Date</th>
+                                <th>Time Slot</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="pickup : ${pendingPickups}">
+                                <td th:text="${pickup.requestId}"></td>
+                                <td th:text="${pickup.user.name}"></td>
+                                <td th:text="${pickup.pickupDate}"></td>
+                                <td th:text="${pickup.timeSlot}"></td>
+                                <td>
+                                            <span class="badge"
+                                                  th:class="${pickup.status == 'Pending'} ? 'bg-warning' : 'bg-info'"
+                                                  th:text="${pickup.status}"></span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(pendingPickups)}">
+                                <td colspan="5" class="text-center text-muted">No pending pickups</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assigned Pickups -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-assigned">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-check me-2"></i>Assigned Pickups</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>User</th>
+                                <th>Pickup Address</th>
+                                <th>Pickup Date</th>
+                                <th>Time Slot</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="pickup : ${assignedPickups}">
+                                <td th:text="${pickup.requestId}"></td>
+                                <td th:text="${pickup.user.name}"></td>
+                                <td th:text="${pickup.pickupAddress}"></td>
+                                <td th:text="${pickup.pickupDate}"></td>
+                                <td th:text="${pickup.timeSlot}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(assignedPickups)}">
+                                <td colspan="5" class="text-center text-muted">No assigned pickups</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
