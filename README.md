@@ -25,7 +25,6 @@ Backend:
           JDBC
           Database - MySql
 Structure:
-
 /src
 │── main
 │   ├── java
@@ -39,6 +38,7 @@ Structure:
 │       └── templates
 │── pom.xml (if using Maven)
 │── README.md
+
 
 How It Works:
               User enters pickup details
